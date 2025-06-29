@@ -37,7 +37,7 @@ class scrapeElement:
                 container, attrs={f"{selector_type}": f"{selector_name}"})
 
             if len(scraped_texts) == 0:
-                raise Exception
+                self.logger.warning("No elements found with given parameters")
             return scraped_texts
         except requests.exceptions.RequestException:
             self.logger.error(

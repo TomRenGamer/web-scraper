@@ -8,10 +8,26 @@ import logging
 import csv
 import os
 
+"""
+Class csvWriter is used to save scraped data to csv file
+
+"""
+
 
 class csvWriter():
+    """
+    Init function initializes saving logs from this component
+
+    """
+
     def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
+
+    """
+    Function writeToFile is used to write data into csv file.
+    filename - string, represents name of the file
+    data - list, represents list of data that will be saved to file
+    """
 
     def writeToFile(self, filename: str, data: list) -> None:
         CSV_DIR = "Csv"
@@ -19,13 +35,11 @@ class csvWriter():
         os.makedirs(CSV_DIR, exist_ok=True)
 
         try:
-            with open(CSV_FILE, "w", newline="") as file:
+            with open(CSV_FILE, "w", newline="", encoding="utf-8") as file:
                 self.logger.info("Saving to file started")
                 csvFile = csv.writer(file)
-                for row in data:
-                    csvFile.writerow(row)
+                csvFile.writerows(data)
 
-            file.close()
             self.logger.info(f"Successfully saved data to {filename}.csv!")
         except FileExistsError:
             self.logger.error(

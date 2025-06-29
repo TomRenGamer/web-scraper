@@ -123,3 +123,40 @@ AttributeError: 'App' object has no attribute 'matched_elements_elements'
 2025-06-28 21:40:15,335 - __main__ - INFO - Scraping completed successfully!
 2025-06-28 21:40:41,356 - Components.csvWriter - INFO - Saving to file started
 2025-06-28 21:40:41,358 - Components.csvWriter - INFO - Successfully saved data to test3.csv!
+2025-06-29 14:45:30,251 - __main__ - INFO - Started app
+2025-06-29 14:45:46,577 - __main__ - CRITICAL - Other error occurred: cannot access local variable 'scraping_params' where it is not associated with a value
+Traceback (most recent call last):
+  File "c:\Users\TomRen\Desktop\webscraper\App\main.py", line 67, in run
+    for container, container_type, container_name in scraping_params:
+                                                     ^^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'scraping_params' where it is not associated with a value
+2025-06-29 14:46:42,291 - __main__ - INFO - Started app
+2025-06-29 14:47:52,103 - __main__ - INFO - Started app
+2025-06-29 14:48:09,336 - __main__ - ERROR - Invalid input, value must be int!
+2025-06-29 14:48:09,337 - __main__ - CRITICAL - Other error occurred: cannot access local variable 'container_name' where it is not associated with a value
+Traceback (most recent call last):
+  File "c:\Users\TomRen\Desktop\webscraper\App\main.py", line 60, in run
+    (container, container_type, container_name))
+                                ^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'container_name' where it is not associated with a value
+2025-06-29 14:48:57,156 - __main__ - INFO - Started app
+2025-06-29 14:49:24,360 - Components.scrapeElement - INFO - Scraping from: https://quotes.toscrape.com/
+2025-06-29 14:49:25,079 - Components.scrapeElement - INFO - Scraping from: https://quotes.toscrape.com/
+2025-06-29 14:49:25,621 - Components.scrapeElement - INFO - Scraping from: https://quotes.toscrape.com/
+2025-06-29 14:49:26,153 - __main__ - INFO - Scraping completed successfully!
+2025-06-29 14:49:48,123 - Components.csvWriter - INFO - Saving to file started
+2025-06-29 14:49:48,123 - Components.csvWriter - INFO - Successfully saved data to test2_1.csv!
+2025-06-29 14:58:09,066 - __main__ - INFO - Started app
+2025-06-29 14:58:12,917 - __main__ - INFO - Started app
+2025-06-29 14:58:53,017 - Components.scrapeElement - INFO - Scraping from: https://quotes.toscrape.com/
+2025-06-29 14:58:53,880 - Components.scrapeElement - INFO - Scraping from: https://quotes.toscrape.com/
+2025-06-29 14:58:54,427 - Components.scrapeElement - INFO - Scraping from: https://quotes.toscrape.com/
+2025-06-29 14:59:07,785 - __main__ - INFO - Scraping completed successfully!
+2025-06-29 14:59:27,005 - Components.csvWriter - INFO - Saving to file started
+2025-06-29 14:59:27,007 - Components.csvWriter - INFO - Successfully saved data to test2_2.csv!
+2025-06-29 15:02:47,414 - __main__ - INFO - Started app
+2025-06-29 15:03:09,576 - Components.scrapeElement - INFO - Scraping from: https://quotes.toscrape.com/
+2025-06-29 15:03:15,384 - Components.scrapeElement - INFO - Scraping from: https://quotes.toscrape.com/
+2025-06-29 15:03:15,941 - __main__ - INFO - Scraping completed successfully!
+2025-06-29 15:03:30,192 - Components.csvWriter - INFO - Saving to file started
+2025-06-29 15:03:30,194 - Components.csvWriter - INFO - Successfully saved data to test2_3.csv!
