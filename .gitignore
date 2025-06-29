@@ -1,6 +1,7 @@
-# Not necessary folders
+# Not necessary folders and extensions
 Logs/
 Csv/
+*.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
