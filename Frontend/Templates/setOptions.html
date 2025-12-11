@@ -1,0 +1,24 @@
+{% extends 'home.html' %}
+
+{% block head %}
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Webscrapper - Set options</title>
+{% endblock %}
+
+{% block body %}
+
+    <p>Scrape data here!</p>
+
+    <form action="/scrapeData" method="POST">
+        <div>
+            <label for="numberOfElements">Enter number of elements You want to scrape:</label>
+            <input type="number" value="{{ numberOfElements }}" max="10" min="1" name="numberOfElements" id="numberOfElements">
+        </div>
+        <div>
+            <label for="pageUrl">Enter website url:</label>
+            <input type="text" value="{{ pageUrl }}" name="pageUrl" id="pageUrl">
+        </div>
+        <button type="submit">Set options</button>
+    </form>
+{% endblock %}

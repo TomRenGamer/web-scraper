@@ -97,10 +97,8 @@ class App:
             except Exception as e:
                 self.logger.critical(
                     f"Other error occurred: {e}", exc_info=True)
-
         except Exception as e:
             self.logger.critical(f"Other error occurred: {e}", exc_info=True)
-
 
 if __name__ == "__main__":
     my_app = App()
