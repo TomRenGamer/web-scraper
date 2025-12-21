@@ -3,6 +3,8 @@ Logs/
 Csv/
 *.log
 testingfile.py
+.vscode
+App/Components/_pycache_
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
