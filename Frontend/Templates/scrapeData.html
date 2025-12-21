@@ -13,52 +13,68 @@
 {% endblock %}
 
 {% block body %}
-
-    <div>
-        <b>Options:</b>
-        <div>Page url: <a href="{{ pageUrl }}"><b>{{ pageUrl }}</b></a></div>
-        <div>Total elements to scrape: <b>{{ numberOfElements }}</b></div>
-        <form action="setOptions" method="post">
-            <input style="display: none;" type="number" value="{{ numberOfElements }}" name="numberOfElements" id="numberOfElements">
-            <input style="display: none;" type="text" value="{{ pageUrl }}" name="pageUrl" id="pageUrl">
-            <button type="submit" onclick="put_value()">Change options</button>
-        </form>
-    </div>
-    <p>Enter values</p>
-
-    <form action="/result" method="POST">
-        <input style="display: none;" type="number" value="{{ numberOfElements }}" name="numberOfElements" id="numberOfElementsResult">
-        <input style="display: none;" type="text" value="{{ pageUrl }}" name="pageUrl" id="pageUrlResult">
-        {% for i in range(0, numberOfElements) %}
-        <div>
-            <label for="header{{ i }}">Enter header for element: </label>
-            <input type="text" name="header{{ i }}" id="header{{ i }}">
-        </div>
-        <div>
-            <label for="container{{ i }}">Choose container containing data:</label>
-            <select name="container{{ i }}" id="container{{ i }}">
-                <option value="div">div</option>
-                <option value="span">span</option>
-                <option value="h1">h1</option>
-                <option value="p">p</option>
-                <option value="container">container</option>
-                <option value="small">small</option>
-            </select>
-        </div>
-        <div>
-            <label for="selectorType{{ i }}">Does your container have class or id? (Type 'class' or 'id'):</label>
-            <select name="selectorType{{ i }}" id="selectorType{{ i }}">
-                <option value="id">id</option>
-                <option value="class">class</option>
-            </select>
-<!--            <input type="text" name="selectorType{{ i }}" id="selectorType{{ i }}">-->
-        </div>
-
-        <div>
-            <label for="selectorName{{ i }}">Enter name of class/id:</label>
-            <input type="text" name="selectorName{{ i }}" id="selectorName{{ i }}">
-        </div>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {% for element in form.elements %}
+        <fieldset>
+            <legend><b>Element {{ loop.index }}</b></legend>
+            <div>
+                {{ element.header.label }}
+                {{ element.header }}
+                {% if element.header.errors %}
+                    <div class="errors">
+                       {% for error in element.header.errors %}
+                           <p style="color: red; font-weight: bold;">{{ error }}</p>
+                       {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div>
+                {{ element.container.label }}
+                {{ element.container }}
+                {% if element.container.errors %}
+                    <div class="errors">
+                       {% for error in element.container.errors %}
+                           <p style="color: red; font-weight: bold;">{{ error }}</p>
+                       {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div>
+                {{ element.selectorType.label }}
+                {{ element.selectorType }}
+                {% if element.selectorType.errors %}
+                    <div class="errors">
+                       {% for error in element.selectorType.errors %}
+                           <p style="color: red; font-weight: bold;">{{ error }}</p>
+                       {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div>
+                {{ element.selectorName.label }}
+                {{ element.selectorName }}
+                {% if element.selectorName.errors %}
+                    <div class="errors">
+                       {% for error in element.selectorName.errors %}
+                           <p style="color: red; font-weight: bold;">{{ error }}</p>
+                       {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </fieldset>
         {% endfor %}
-        <button type="submit">Scrape</button>
+        {{ form.submit() }}
     </form>
 {% endblock %}
+
+<!--    <div>-->
+<!--        <b>Options:</b>-->
+<!--        <div>Page url: <a href="{{ pageUrl }}"><b>{{ pageUrl }}</b></a></div>-->
+<!--        <div>Total elements to scrape: <b>{{ numberOfElements }}</b></div>-->
+<!--        <form action="setOptions" method="post">-->
+<!--            <input style="display: none;" type="number" value="{{ numberOfElements }}" name="numberOfElements" id="numberOfElements">-->
+<!--            <input style="display: none;" type="text" value="{{ pageUrl }}" name="pageUrl" id="pageUrl">-->
+<!--            <button type="submit" onclick="put_value()">Change options</button>-->
+<!--        </form>-->
+<!--    </div>-->

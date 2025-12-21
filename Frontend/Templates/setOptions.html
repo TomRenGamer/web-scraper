@@ -7,18 +7,30 @@
 {% endblock %}
 
 {% block body %}
-
-    <p>Scrape data here!</p>
-
-    <form action="/scrapeData" method="POST">
+    <form method="POST">
+        {{ form.csrf_token }}
         <div>
-            <label for="numberOfElements">Enter number of elements You want to scrape:</label>
-            <input type="number" value="{{ numberOfElements }}" max="10" min="1" name="numberOfElements" id="numberOfElements">
+            {{ form.number_of_elements.label }}
+            {{ form.number_of_elements }}
+            {% if form.number_of_elements.errors %}
+                    <div class="errors">
+                       {% for error in form.number_of_elements.errors %}
+                           <p style="color: red; font-weight: bold;">{{ error }}</p>
+                       {% endfor %}
+                    </div>
+            {% endif %}
         </div>
         <div>
-            <label for="pageUrl">Enter website url:</label>
-            <input type="text" value="{{ pageUrl }}" name="pageUrl" id="pageUrl">
+            {{ form.page_url.label }}
+            {{ form.page_url }}
+            {% if form.page_url.errors %}
+                    <div class="errors">
+                       {% for error in form.page_url.errors %}
+                           <p style="color: red; font-weight: bold;">{{ error }}</p>
+                       {% endfor %}
+                    </div>
+            {% endif %}
         </div>
-        <button type="submit">Set options</button>
+        {{ form.submit }}
     </form>
 {% endblock %}
