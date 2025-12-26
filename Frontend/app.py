@@ -2,207 +2,192 @@
 Made by TomRen
 Safe scraping website: https://quotes.toscrape.com/
 
+Flask web application for configurable web scraping and CSV export.
+
+The application allows the user to:
+- specify a target website URL,
+- choose the number of elements to scrape,
+- define HTML containers and selectors dynamically using WTForms.
 """
 
-from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug import Response
-
-from Backend.App.Components.scrapeElement import *
-from Backend.App.Components.csvWriter import *
-from flask_wtf import FlaskForm
+from flask import Flask, render_template, request, redirect, url_for, session
 from flask_wtf.csrf import CSRFProtect
-from wtforms import IntegerField, StringField, SubmitField, SelectField, FieldList, FormField
-from wtforms.validators import InputRequired, DataRequired, NumberRange, URL
+
+from components.scrapeElement import ScrapeElement
+from components.csvWriter import CsvWriter
+
+from forms.setOptionsForm import *
+from forms.scrapeDataForm import *
+
 import logging
 
-""".
-Initializing flask App with 'static_folder' and 'template_folder' property.
-"""
 
 flask = Flask(__name__,
-              static_folder="./Styles",
-              template_folder="./Templates")
+              static_folder="./static",
+              template_folder="./templates"
+              )
 
-"""
-Configuration of csrf key for form protection.
-"""
-
-csrf = CSRFProtect(flask)
 flask.config["SECRET_KEY"] = "secret123"
-
-"""
-Main class 'App' for initializing common functions for webscraper app.
-"""
+csrf = CSRFProtect(flask)
 
 
 class App:
+    """
+    Application service container.
+
+    Holds shared instances used across the application, such as:
+    - the web scraper,
+    - the CSV writer.
+    """
+
     def __init__(self) -> None:
-        self.scraper = scrapeElement()
-        self.logger = logging.getLogger(__name__)
-        self.csv_writer = csvWriter()
-
-
-"""
-Class 'setOptionsForm' is representing an instance of WTForms subclass. Subclass represents form fields visible 
-on website. It's used to set options like:
-> amount of data to scrape
-> specify website url
-
-Fields:
-> 'number_of_elements' is IntegerField which accepts integer values from 1 to 20. Default value is 1.
-> 'page_url' represents StringField which accepts string value. It has special validation for websites url.
-> 'submit' is SubmitField which is used to confirm data in previous fields.
-"""
-
-
-class setOptionsForm(FlaskForm):
-    number_of_elements = IntegerField("Enter amount of elements to scrape:",
-                                      validators=[DataRequired("Number of elements is required!"), NumberRange(min=1, max=20)],
-                                      render_kw={"class": "numberOfElements"}, default=1)
-    page_url = StringField("Enter website url:",
-                           validators=[DataRequired("Website url is required!"), URL(message="Invalid website url!")],
-                           render_kw={"class": "pageUrl", "required": False})
-    submit = SubmitField("Submit")
-
-
-"""
-Class 'scrapeDataElement' is representing an instance of WTForms subclass. Subclass represents form fields visible 
-on website used in FieldList for dynamic rendering fields based on elements to scrape amount. 
-It's used to specify information's about container like:
-> what container contains data,
-> what does container have, class or id,
-> what is the name of class or id.
-
-Fields:
-> 'header' represents StringField which accepts string value. It can't be empty.
-> 'container' is SelectField from which You choose container that has the desired data.
-> 'selectorType' represents SelectField that has 2 values - class or id. 
-> 'selectorName' represents StringField which accepts string value. It can't be empty.
-"""
-
-
-class scrapeDataElement(FlaskForm):
-    header = StringField("Enter header for element:",
-                         validators=[DataRequired("Header is required!")],
-                         render_kw={"class": "header", "required": False})
-    container = SelectField("Choose container containing data:",
-                            render_kw={"class": "container"},
-                            choices=[("small", "small"), ("span", "span")])
-    selectorType = SelectField("Does your container have class or id? (Choose 'class' or 'id'):",
-                               render_kw={"class": "containerType"},
-                               choices=[("class", "class"), ("id", "id")])
-    selectorName = StringField("Enter name of class/id:",
-                               validators=[DataRequired("Name of class/id is required!")],
-                               render_kw={"class": "header", "required": False})
-
-
-"""
-Class 'scrapeDataForm' is representing an instance of WTForms subclass. Subclass represents form fields visible 
-on website. It implements instance of 'scrapeDataElement' class for dynamic generating fields based on 
-elements to scrape amount. It has SubmitField too.
-"""
-
-
-class scrapeDataForm(FlaskForm):
-    elements = FieldList(FormField(scrapeDataElement), min_entries=1, max_entries=20)
-    submit = SubmitField("Submit")
+        self.scraper = ScrapeElement()
+        self.csv_writer = CsvWriter()
+        self.logger = logging
 
 
 app = App()
 
 
-@flask.route('/')
+@flask.route("/")
 def home() -> str:
+    """
+    Render the home page.
+
+    Returns:
+        str: Rendered HTML template.
+    """
+    app.logger.info("Successfully rendered 'home.html' template")
     return render_template("home.html")
 
 
-@flask.route('/setOptions', methods=["POST", "GET"])
+@flask.route("/setOptions", methods=["GET", "POST"])
 def set_options() -> Response | str:
-    if request.method == "POST" or request.method == "GET":
-        form = setOptionsForm()
+    """
+    Handle scraping options form.
 
-        if form.validate_on_submit():
-            number_of_elements = form.number_of_elements.data
-            page_url = form.page_url.data
+    Validates user input and redirects to the scraping configuration view.
 
-            return redirect(url_for("scrape_data", numberOfElements=number_of_elements, pageUrl=page_url))
-        return render_template("setOptions.html", form=form)
+    Returns:
+        Response | str: Redirect response or rendered template.
+    """
+    form = SetOptionsForm()
+
+    if form.validate_on_submit():
+        number_of_elements = form.number_of_elements.data
+        page_url = form.page_url.data
+
+        app.logger.debug(f"Params from 'set_options()' -> number_of_elements: {number_of_elements}, "
+                         f"page_url: {page_url}")
+
+        app.logger.info("Redirecting to 'scrape_data' endpoint")
+        return redirect(
+            url_for(
+                "scrape_data",
+                numberOfElements=number_of_elements,
+                pageUrl=page_url
+            )
+        )
+
+    return render_template("setOptions.html", form=form)
 
 
-@flask.route('/scrapeData', methods=["POST", "GET"])
+@flask.route("/scrapeData", methods=["GET", "POST"])
 def scrape_data() -> Response | str:
-    if request.method == "POST" or request.method == "GET":
-        form = scrapeDataForm()
-        number_of_elements = request.args.get("numberOfElements", 1, type=int)
-        page_url = request.args.get("pageUrl")
+    """
+    Handle scraping configuration and execute scraping logic.
 
-        while len(form.elements) < number_of_elements:
-            form.elements.append_entry()
+    Dynamically builds scraping parameters, runs the scraper,
+    and stores results in the session.
 
-        if form.validate_on_submit():
-            params = []
-            raw_results = []
-            results = []
-            max_number_of_elements = 0
-            headers = ["X"]
+    Returns:
+        Response | str: Redirect response or rendered template.
+    """
+    form = ScrapeDataForm()
+    number_of_elements = request.args.get("numberOfElements", 1, type=int)
+    page_url = request.args.get("pageUrl")
 
-            for i, element_form in enumerate(form.elements):
-                param = {
-                    "header": element_form.header.data,
-                    "container": element_form.container.data,
-                    "selector_type": element_form.selectorType.data,
-                    "selector_name": element_form.selectorName.data
-                }
+    while len(form.elements) < number_of_elements:
+        form.elements.append_entry()
 
-                params.append(param)
+    if form.validate_on_submit():
+        params = []
+        raw_results = []
+        results = []
+        headers = ["X"]
 
-            for param in params:
-                temp = [el for el in param.values()]
-                headers.append(temp[0])
-                raw_data = app.scraper.Scrape(page_url, temp[1], temp[2], temp[3])
-                raw_results.append([x.text for x in raw_data])
+        for element_form in form.elements:
+            params.append({
+                "header": element_form.header.data,
+                "container": element_form.container.data,
+                "selector_type": element_form.selector_type.data,
+                "selector_name": element_form.selector_name.data
+            })
 
-            if raw_results:
-                max_number_of_elements = max(len(r) for r in raw_results)
-            else:
-                max_number_of_elements = 0
+        for param in params:
+            headers.append(param["header"])
+            raw_data = app.scraper.scrape(
+                page_url,
+                param["container"],
+                param["selector_type"],
+                param["selector_name"]
+            )
+            raw_results.append([el.text for el in raw_data])
 
-            for i in range(max_number_of_elements):
-                temp_el = [f"{i + 1}."]
+        max_rows = max((len(r) for r in raw_results), default=0)
 
-                for j in range(len(raw_results)):
-                    if i < len(raw_results[j]):
-                        temp_el.append(raw_results[j][i])
-                    else:
-                        temp_el.append("")
+        for i in range(max_rows):
+            row = [f"{i + 1}."]
+            for column in raw_results:
+                row.append(column[i] if i < len(column) else "")
+            results.append(row)
 
-                results.append(temp_el)
+        app.logger.debug(
+            f"Params from 'scrape_data()' -> results: {results}, headers: {headers}, "
+            f"numberOfElements: {number_of_elements}, pageUrl: {page_url}, headersAmount: {headers}")
 
-            session['scrape_results'] = {
-                'results': results,
-                'headers': headers,
-                'numberOfElements': number_of_elements,
-                'pageUrl': page_url,
-                'headersAmount': len(headers)
-            }
+        session["scrape_results"] = {
+            "results": results,
+            "headers": headers,
+            "numberOfElements": number_of_elements,
+            "pageUrl": page_url,
+            "headersAmount": len(headers)
+        }
 
-            return redirect(url_for("result"))
+        app.logger.info("Redirecting to 'result' endpoint")
+        return redirect(url_for("result"))
 
-        return render_template("scrapeData.html", form=form, numberOfElements=number_of_elements, pageUrl=page_url)
+    return render_template(
+        "scrapeData.html",
+        form=form,
+        numberOfElements=number_of_elements,
+        pageUrl=page_url
+    )
 
 
-@flask.route('/result', methods=["POST", "GET"])
+@flask.route("/result", methods=["GET"])
 def result() -> str:
-    data = session.get('scrape_results', {})
+    """
+    Display scraping results.
 
-    headers = data.get("headers")
-    results = data.get("results", [])
-    number_of_elements = data.get("numberOfElements", 0)
-    page_url = data.get("pageUrl")
+    Reads scraping data from the session and renders the result view.
 
-    return render_template("result.html", numberOfElements=number_of_elements, pageUrl=page_url,
-                           results=results, headers=headers, headersAmount=len(headers))
+    Returns:
+        str: Rendered HTML template with scraping results.
+    """
+    data = session.get("scrape_results", {})
+
+    return render_template(
+        "result.html",
+        numberOfElements=data.get("numberOfElements", 0),
+        pageUrl=data.get("pageUrl"),
+        results=data.get("results", []),
+        headers=data.get("headers", []),
+        headersAmount=len(data.get("headers", []))
+    )
 
 
 if __name__ == "__main__":
+    app.logger.info("Started app")
     flask.run(port=4500)

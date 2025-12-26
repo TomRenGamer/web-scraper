@@ -1,28 +1,27 @@
-{% extends 'home.html' %}
-
-{% block head %}
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Webscrapper - Result</title>
-{% endblock %}
-
-{% block body %}
-    <div>
-        <h3>Successful scraping!</h3>
-        <p>You have scraped <b>{{ numberOfElements }} elements</b> from <a href="{{ pageUrl }}"><b>{{ pageUrl }}</b></a></p>
-        <table>
-            <tr>
-                {% for i in range(0, headersAmount) %}
-                    <th>{{ headers[i] }}</th>
-                {% endfor %}
-            </tr>
-                {% for result in results %}
-                    <tr>
-                        {% for el in result %}
-                            <td>{{ el }}</td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-        </table>
-    </div>
+{% extends 'home.html' %} {% block head %}
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+<title>Webscraper - Result</title>
+{% endblock %} {% block body %}
+<div>
+  <h3>Successful scraping!</h3>
+  <p>
+    You have scraped <b>{{ numberOfElements }} elements</b> from
+    <a href="{{ pageUrl }}"><b>{{ pageUrl }}</b></a>
+  </p>
+  <table>
+    <tr>
+      {% for i in range(0, headersAmount) %}
+      <th>{{ headers[i] }}</th>
+      {% endfor %}
+    </tr>
+    {% for result in results %}
+    <tr>
+      {% for el in result %}
+      <td>{{ el }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+</div>
 {% endblock %}

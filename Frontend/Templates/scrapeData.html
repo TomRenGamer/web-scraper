@@ -1,71 +1,55 @@
-{% extends 'home.html' %}
-
-{% block head %}
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Webscrapper - Scrape</title>
-    <script>
-        function put_value() {
-            let page_url = "https://quotes.toscrape.com/";
-            document.querySelector('pageUrl').value=page_url;
-        }
-    </script>
-{% endblock %}
-
-{% block body %}
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        {% for element in form.elements %}
-        <fieldset>
-            <legend><b>Element {{ loop.index }}</b></legend>
-            <div>
-                {{ element.header.label }}
-                {{ element.header }}
-                {% if element.header.errors %}
-                    <div class="errors">
-                       {% for error in element.header.errors %}
-                           <p style="color: red; font-weight: bold;">{{ error }}</p>
-                       {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            <div>
-                {{ element.container.label }}
-                {{ element.container }}
-                {% if element.container.errors %}
-                    <div class="errors">
-                       {% for error in element.container.errors %}
-                           <p style="color: red; font-weight: bold;">{{ error }}</p>
-                       {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            <div>
-                {{ element.selectorType.label }}
-                {{ element.selectorType }}
-                {% if element.selectorType.errors %}
-                    <div class="errors">
-                       {% for error in element.selectorType.errors %}
-                           <p style="color: red; font-weight: bold;">{{ error }}</p>
-                       {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            <div>
-                {{ element.selectorName.label }}
-                {{ element.selectorName }}
-                {% if element.selectorName.errors %}
-                    <div class="errors">
-                       {% for error in element.selectorName.errors %}
-                           <p style="color: red; font-weight: bold;">{{ error }}</p>
-                       {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-        </fieldset>
+{% extends 'home.html' %} {% block head %}
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+<title>Webscraper - Scrape</title>
+{% endblock %} {% block body %}
+<form method="POST">
+  {{ form.hidden_tag() }} {% for element in form.elements %}
+  <fieldset>
+    <legend><b>Element {{ loop.index }}</b></legend>
+    <div>
+      {{ element.header.label }} {{ element.header }} {% if
+      element.header.errors %}
+      <div class="errors">
+        {% for error in element.header.errors %}
+        <p style="color: red; font-weight: bold">{{ error }}</p>
         {% endfor %}
-        {{ form.submit() }}
-    </form>
+      </div>
+      {% endif %}
+    </div>
+    <div>
+      {{ element.container.label }} {{ element.container }} {% if
+      element.container.errors %}
+      <div class="errors">
+        {% for error in element.container.errors %}
+        <p style="color: red; font-weight: bold">{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    <div>
+      {{ element.selector_type.label }} {{ element.selector_type }} {% if
+      element.selector_type.errors %}
+      <div class="errors">
+        {% for error in element.selector_type.errors %}
+        <p style="color: red; font-weight: bold">{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    <div>
+      {{ element.selector_name.label }} {{ element.selector_name }} {% if
+      element.selector_name.errors %}
+      <div class="errors">
+        {% for error in element.selector_name.errors %}
+        <p style="color: red; font-weight: bold">{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </fieldset>
+  {% endfor %} {{ form.submit() }}
+</form>
 {% endblock %}
 
 <!--    <div>-->

@@ -4,10 +4,11 @@ Safe scraping website: https://quotes.toscrape.com/
 
 """
 
-from Components.scrapeElement import scrapeElement
-from Components.csvWriter import csvWriter
 import logging
 import sys
+
+from Components.csvWriter import csvWriter
+from Components.scrapeElement import scrapeElement
 
 """
 Class App represents scraper application and implements all components
@@ -55,7 +56,8 @@ class App:
                     selector_name = str(input("Enter name of class/id: "))
 
                     self.logger.debug(
-                        f"Scraping params: page_url: {page_url}, container: {container}, selector_type: {selector_type}, selector_name: {selector_name}")
+                        f"Scraping params: page_url: {page_url}, container: {container}, selector_type: {selector_type}"
+                        f", selector_name: {selector_name}")
                     temp = self.app.Scrape(
                         page_url, container, selector_type, selector_name)
                     self.scraped_elements.append(
@@ -99,6 +101,7 @@ class App:
                     f"Other error occurred: {e}", exc_info=True)
         except Exception as e:
             self.logger.critical(f"Other error occurred: {e}", exc_info=True)
+
 
 if __name__ == "__main__":
     my_app = App()

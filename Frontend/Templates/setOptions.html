@@ -1,36 +1,29 @@
-{% extends 'home.html' %}
-
-{% block head %}
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Webscrapper - Set options</title>
-{% endblock %}
-
-{% block body %}
-    <form method="POST">
-        {{ form.csrf_token }}
-        <div>
-            {{ form.number_of_elements.label }}
-            {{ form.number_of_elements }}
-            {% if form.number_of_elements.errors %}
-                    <div class="errors">
-                       {% for error in form.number_of_elements.errors %}
-                           <p style="color: red; font-weight: bold;">{{ error }}</p>
-                       {% endfor %}
-                    </div>
-            {% endif %}
-        </div>
-        <div>
-            {{ form.page_url.label }}
-            {{ form.page_url }}
-            {% if form.page_url.errors %}
-                    <div class="errors">
-                       {% for error in form.page_url.errors %}
-                           <p style="color: red; font-weight: bold;">{{ error }}</p>
-                       {% endfor %}
-                    </div>
-            {% endif %}
-        </div>
-        {{ form.submit }}
-    </form>
+{% extends 'home.html' %} {% block head %}
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+<title>Webscraper - Set options</title>
+{% endblock %} {% block body %}
+<form method="POST">
+  {{ form.csrf_token }}
+  <div>
+    {{ form.number_of_elements.label }} {{ form.number_of_elements }} {% if
+    form.number_of_elements.errors %}
+    <div class="errors">
+      {% for error in form.number_of_elements.errors %}
+      <p style="color: red; font-weight: bold">{{ error }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  <div>
+    {{ form.page_url.label }} {{ form.page_url }} {% if form.page_url.errors %}
+    <div class="errors">
+      {% for error in form.page_url.errors %}
+      <p style="color: red; font-weight: bold">{{ error }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {{ form.submit }}
+</form>
 {% endblock %}

@@ -9,7 +9,7 @@ import csv
 import os
 
 """
-Class csvWriter is used to save scraped data to csv file
+Class 'csvWriter' is used to save scraped data to csv file
 
 """
 

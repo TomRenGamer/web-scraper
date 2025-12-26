@@ -13,7 +13,7 @@ LOG_DIR = "Logs"
 LOG_FILE = os.path.join(LOG_DIR, "app.log")
 
 """
-Function setup_logging is used to save logs while app works
+Function 'setup_logging' is used to save logs while app works
 
 """
 
