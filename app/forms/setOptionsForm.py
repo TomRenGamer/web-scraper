@@ -3,6 +3,10 @@ from wtforms import IntegerField, StringField, SubmitField
 from wtforms.validators import DataRequired, NumberRange, URL
 
 
+# def is_scraping_allowed() -> None:
+#     if
+
+
 class SetOptionsForm(FlaskForm):
     """
     Form for setting basic scraping options.

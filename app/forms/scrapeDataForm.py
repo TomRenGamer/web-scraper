@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField, FieldList, FormField
+from wtforms import StringField, SubmitField, SelectField, FieldList, FormField, BooleanField
 from wtforms.validators import DataRequired
 
 
@@ -19,7 +19,8 @@ class ScrapeDataElement(FlaskForm):
 
     container = SelectField(
         "Choose container containing data:",
-        choices=[("small", "small"), ("span", "span")],
+        choices=[("small", "small"), ("span", "span"), ("div", "div"), ("p", "p"),
+                 ("h1", "h1"), ("h2", "h2"), ("h3", "h3"), ("h4", "h4"), ("h5", "h5"), ("h6", "h6")],
         render_kw={"class": "container"}
     )
 
@@ -33,6 +34,11 @@ class ScrapeDataElement(FlaskForm):
         "Enter name of class/id:",
         validators=[DataRequired("Name of class/id is required!")],
         render_kw={"class": "selectorName"}
+    )
+
+    elements_in_container = BooleanField(
+        "Does your container have multiple elements?",
+        render_kw={"class": "elementsInContainer"}, default=False
     )
 
 

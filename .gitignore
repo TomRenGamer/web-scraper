@@ -1,11 +1,11 @@
-# Not necessary folders, extensions, files
-Logs/
+# Project-specific
+logs/
 Csv/
-/documentation
-*.log
 testingfile.py
-.vscode
-App/Components/_pycache_
+
+# IDE / editor
+.vscode/
+.idea/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

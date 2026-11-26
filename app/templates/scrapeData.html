@@ -47,6 +47,16 @@
       </div>
       {% endif %}
     </div>
+    <div>
+      {{ element.elements_in_container.label }} {{ element.elements_in_container
+      }} {% if element.elements_in_container.errors %}
+      <div class="errors">
+        {% for error in element.elements_in_container.errors %}
+        <p style="color: red; font-weight: bold">{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
   </fieldset>
   {% endfor %} {{ form.submit() }}
 </form>

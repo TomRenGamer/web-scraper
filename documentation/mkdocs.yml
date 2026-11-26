@@ -1,0 +1,5 @@
+site_name: Webscraper App - Documentation
+nav:
+
+theme:
+  name: simple-blog

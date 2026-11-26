@@ -10,7 +10,7 @@ based on tag name and CSS selector attributes.
 
 import logging
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 
 class ScrapeElement:
@@ -27,7 +27,7 @@ class ScrapeElement:
         """
         self.logger = logging.getLogger(__name__)
 
-    def scrape(self, page_url: str, container: str, selector_type: str, selector_name: str) -> list:
+    def scrape(self, page_url: str, container: str, selector_type: str, selector_name: str, elements_in_container: bool) -> list:
         """
         Scrape elements from a webpage.
 
@@ -36,6 +36,7 @@ class ScrapeElement:
             container (str): HTML tag containing the data (e.g. 'div', 'span').
             selector_type (str): Selector type ('class' or 'id').
             selector_name (str): Name of the class or id.
+            elements_in_container (bool): Whether the container has multiple elements.
 
         Returns:
             list: List of BeautifulSoup elements matching the criteria.
@@ -75,3 +76,13 @@ class ScrapeElement:
                 exc_info=True
             )
             return []
+
+    @staticmethod
+    def extract_text(element: Tag, elements_in_container: bool, separator: str = ", ") -> str:
+        if not elements_in_container:
+            return element.get_text(" ", strip=True)
+
+        texts = [child.get_text(" ", strip=True)
+                 for child in element.find_all(recursive=False)]
+        texts = [t for t in texts if t]
+        return separator.join(texts) if texts else element.get_text(" ", strip=True)

@@ -21,6 +21,8 @@ from forms.setOptionsForm import *
 from forms.scrapeDataForm import *
 
 import logging
+import os
+import secrets
 
 
 flask = Flask(__name__,
@@ -28,7 +30,7 @@ flask = Flask(__name__,
               template_folder="./templates"
               )
 
-flask.config["SECRET_KEY"] = "secret123"
+flask.config["SECRET_KEY"] = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
 csrf = CSRFProtect(flask)
 
 
@@ -122,7 +124,8 @@ def scrape_data() -> Response | str:
                 "header": element_form.header.data,
                 "container": element_form.container.data,
                 "selector_type": element_form.selector_type.data,
-                "selector_name": element_form.selector_name.data
+                "selector_name": element_form.selector_name.data,
+                "elements_in_container": element_form.elements_in_container.data
             })
 
         for param in params:
@@ -131,9 +134,10 @@ def scrape_data() -> Response | str:
                 page_url,
                 param["container"],
                 param["selector_type"],
-                param["selector_name"]
+                param["selector_name"],
+                param["elements_in_container"]
             )
-            raw_results.append([el.text for el in raw_data])
+            raw_results.append([app.scraper.extract_text(el, param["elements_in_container"]) for el in raw_data])
 
         max_rows = max((len(r) for r in raw_results), default=0)
 
@@ -145,14 +149,15 @@ def scrape_data() -> Response | str:
 
         app.logger.debug(
             f"Params from 'scrape_data()' -> results: {results}, headers: {headers}, "
-            f"numberOfElements: {number_of_elements}, pageUrl: {page_url}, headersAmount: {headers}")
+            f"numberOfElements: {number_of_elements}, pageUrl: {page_url}, headersAmount: {headers}, elementsInContainer: {element_form.elements_in_container.data}")
 
         session["scrape_results"] = {
             "results": results,
             "headers": headers,
             "numberOfElements": number_of_elements,
             "pageUrl": page_url,
-            "headersAmount": len(headers)
+            "headersAmount": len(headers),
+            "elementsInContainer": element_form.elements_in_container.data
         }
 
         app.logger.info("Redirecting to 'result' endpoint")
