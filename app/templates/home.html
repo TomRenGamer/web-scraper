@@ -8,21 +8,58 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
     />
-    <title>Webscraper - Home</title>
+    <title>Web Scraper - Home</title>
     {% endblock %}
   </head>
   <body>
     <header>
-      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('home') }}">Web Scraper</a>
       <a href="{{ url_for('set_options') }}">Start scraping</a>
-      <a href="#">Github</a>
-      <a href="https://devren.pl">Portfolio</a>
+      <a href="https://github.com/TomRenGamer/webscraper-system" target="_blank" rel="noopener">Github</a>
+      <a href="https://devren.pl" target="_blank" rel="noopener">Portfolio</a>
     </header>
-    <h1>Webscraper</h1>
-    <p>Nice to see You here!</p>
+
+    {% if request.endpoint != 'home' %}
+    <h1>Web Scraper</h1>
+    <p>Pick the data you need and get it as a clean table.</p>
+    {% endif %}
 
     {% block body %}
-    <p>About us...</p>
+    <section class="hero">
+      <span class="eyebrow">No code needed</span>
+      <h1>Turn any web page into a clean table</h1>
+      <p class="lead">
+        Web Scraper lets you pick the data you need straight from your browser.
+        Tell it which HTML elements to look for, and get the results as a table
+        you can download as CSV.
+      </p>
+      <div class="actions">
+        <a class="btn" href="{{ url_for('set_options') }}">Start scraping</a>
+        <a class="btn btn-ghost" href="https://quotes.toscrape.com/" target="_blank" rel="noopener">Try it on a demo site</a>
+      </div>
+    </section>
+
+    <section class="steps">
+      <h2>How it works</h2>
+      <ol>
+        <li>
+          <h3>Set the page</h3>
+          <p>Paste the page URL and choose how many elements you want to collect.</p>
+        </li>
+        <li>
+          <h3>Describe the data</h3>
+          <p>For each element pick the tag, its class or id, and whether it contains nested items.</p>
+        </li>
+        <li>
+          <h3>Get the results</h3>
+          <p>Review everything in a table and download it as a CSV file.</p>
+        </li>
+      </ol>
+    </section>
+
+    <p class="note">
+      Please scrape responsibly: respect the site's terms of use and robots.txt.
+    </p>
     {% endblock %}
   </body>
 </html>
