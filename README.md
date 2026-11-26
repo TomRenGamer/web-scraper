@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🕸️ Webscraper
+# 🕸️ Web Scraper
 
 **Configurable web scraper with a Flask UI – pick the HTML elements, get a clean table.**
 
