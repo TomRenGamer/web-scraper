@@ -175,7 +175,6 @@ A single HTTP response can be either a page or a file, so the download is split 
 ## Roadmap
 
 - [x] Export results to CSV
-- [ ] Custom CSS selector for nested elements (e.g. `a.tag`)
 - [ ] Check `robots.txt` before scraping
 - [ ] Documentation site with MkDocs
 - [ ] Tests for scraping logic
@@ -187,4 +186,4 @@ and don't overload servers with requests.
 
 ## Author
 
-**TomRen** – [devren.pl](https://devren.pl)
+**TomRen**
