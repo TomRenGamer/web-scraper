@@ -79,6 +79,17 @@ class ScrapeElement:
 
     @staticmethod
     def extract_text(element: Tag, elements_in_container: bool, separator: str = ", ") -> str:
+        """
+        Extract text from a scraped HTML element.
+
+        Args:
+            element (Tag): BeautifulSoup element to extract text from.
+            elements_in_container (bool): Whether the element has multiple child elements.
+            separator (str): Separator used to join texts of child elements.
+
+        Returns:
+            str: Text of the element or joined texts of its direct children.
+        """
         if not elements_in_container:
             return element.get_text(" ", strip=True)
 

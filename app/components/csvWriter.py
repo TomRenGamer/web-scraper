@@ -9,6 +9,7 @@ Provides a helper class for saving scraped data to CSV files.
 
 import logging
 import csv
+import io
 import os
 
 
@@ -23,32 +24,20 @@ class CsvWriter:
         """
         self.logger = logging.getLogger(__name__)
 
-    def write_to_file(self, filename: str, data: list) -> None:
+    def to_bytes(self, headers: list, rows: list) -> io.BytesIO:
         """
-        Write data to a CSV file.
+        Generate CSV data in memory.
 
         Args:
-            filename (str): Name of the output file (without extension).
-            data (list): Two-dimensional list representing rows of CSV data.
+            headers (list): Column headers written as the first row.
+            rows (list): Two-dimensional list representing rows of CSV data.
+
+        Returns:
+            io.BytesIO: CSV file encoded in UTF-8 with BOM, ready for send_file.
         """
-        csv_dir = "Csv"
-        csv_file = os.path.join(csv_dir, f"{filename}.csv")
-        os.makedirs(csv_dir, exist_ok=True)
+        text = io.StringIO()
+        writer = csv.writer(text)
+        writer.writerow(headers)
+        writer.writerows(rows)
 
-        try:
-            self.logger.info("Saving data to CSV file started")
-
-            with open(csv_file, "w", newline="", encoding="utf-8") as file:
-                writer = csv.writer(file)
-                writer.writerows(data)
-
-            self.logger.info(f"Successfully saved data to {filename}.csv")
-
-        except PermissionError:
-            self.logger.error("Permission denied while writing CSV file")
-
-        except Exception as e:
-            self.logger.critical(
-                f"An error occurred while saving data to CSV file: {e}",
-                exc_info=True
-            )
+        return io.BytesIO(text.getvalue().encode("utf-8-sig"))

@@ -1,6 +1,6 @@
 # Project-specific
 logs/
-Csv/
+app/csv/
 testingfile.py
 
 # IDE / editor
@@ -152,6 +152,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Flask Session
+flask_session/
 
 # Spyder project settings
 .spyderproject

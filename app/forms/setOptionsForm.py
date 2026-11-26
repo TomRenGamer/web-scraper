@@ -1,3 +1,13 @@
+"""
+Made by TomRen
+Safe scraping website: https://quotes.toscrape.com/
+
+Scraping options form.
+
+Defines the WTForms form used to set the target website URL
+and the number of elements to scrape.
+"""
+
 from flask_wtf import FlaskForm
 from wtforms import IntegerField, StringField, SubmitField
 from wtforms.validators import DataRequired, NumberRange, URL

@@ -2,7 +2,7 @@
 
 # 🕸️ Webscraper
 
-**Configurable web scraper with a Flask UI – pick the HTML elements, get a clean table.**
+**Configurable web scraper with a Flask UI – pick the HTML elements, get a clean table and download it as CSV.**
 
 ![Python](https://img.shields.io/badge/Python-3.15-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-3.1-000000?logo=flask&logoColor=white)
@@ -18,6 +18,7 @@
 Webscraper is a small web application that lets you scrape data from any page **without writing code**.
 You give it a URL, describe which HTML elements hold the data (tag + class or id), and the app
 returns the results as a numbered table – one column per element you defined.
+One click later you have the same data as a CSV file.
 
 Built as a learning project to practise Flask, WTForms, BeautifulSoup and clean, documented Python
 (docstrings following PEP 257).
@@ -31,6 +32,10 @@ Built as a learning project to practise Flask, WTForms, BeautifulSoup and clean,
 - 🧩 **Nested elements** – toggle *"multiple elements"* to collect the text of every child tag
   and join it into one cell (e.g. `change, deep-thoughts, thinking, world`)
 - 📊 **Result table** – results from all elements merged into rows, ready to read
+- 📥 **CSV export** – download the table as `scraped_data.csv`, generated in memory with `csv.writer`
+  (UTF-8 with BOM, so Excel shows special characters correctly)
+- 🗄️ **Server-side sessions** – results are kept by Flask-Session on the server,
+  so big scrapes don't hit the 4 KB cookie limit
 - ✅ **Validation & CSRF protection** – Flask-WTF validates every field and protects the forms
 - 📝 **Logging** – rotating log files plus console output
 - 🌗 **Responsive UI** – works on desktop and mobile, with automatic dark mode
@@ -47,6 +52,7 @@ Built as a learning project to practise Flask, WTForms, BeautifulSoup and clean,
 | --- | --- |
 | Backend | Python 3.15, Flask, Werkzeug |
 | Forms | Flask-WTF, WTForms |
+| Sessions | Flask-Session (filesystem) |
 | Scraping | Requests, BeautifulSoup 4 (`html.parser`) |
 | Frontend | Jinja2 templates, plain CSS |
 | Docs | MkDocs |
@@ -81,8 +87,12 @@ uv sync
 
 ### Configuration
 
-The app reads its session key from the `SECRET_KEY` environment variable.
-Without it, a random key is generated on every start (fine for local development).
+The app reads its secret key from the `SECRET_KEY` environment variable.
+It is used to sign the session cookie and CSRF tokens. Without it, a random key is generated
+on every start – fine for local development, but forms opened before a restart will fail
+the CSRF check.
+
+Scraping results are stored server-side in `app/flask_session/` (ignored by git).
 
 ```powershell
 # Windows PowerShell
@@ -115,6 +125,8 @@ Open <http://127.0.0.1:4500> in your browser.
    - **Class or id** and its **name**,
    - **Multiple elements** – turn on if the data sits in child tags of the container.
 4. Click **Submit** and see the results.
+5. Click **Download CSV** – you'll land on a summary page and the file
+   `scraped_data.csv` will start downloading automatically.
 
 **Example** on quotes.toscrape.com:
 
@@ -133,13 +145,14 @@ webscraper/
 │   ├── components/
 │   │   ├── __init__.py        # logging setup
 │   │   ├── scrapeElement.py   # ScrapeElement – fetching & parsing HTML
-│   │   └── csvWriter.py       # CsvWriter – saving data to CSV
+│   │   └── csvWriter.py       # CsvWriter – building CSV files in memory
 │   ├── forms/
 │   │   ├── setOptionsForm.py  # URL + number of elements
 │   │   └── scrapeDataForm.py  # per-element scraping settings
-│   ├── templates/             # Jinja2 templates
+│   ├── templates/             # Jinja2 templates (home, setOptions, scrapeData,
+│   │                          #   result, download_csv)
 │   └── static/style.css
-├── documentation/             # MkDocs documentation
+├── docs/                      # MkDocs documentation and screenshots
 ├── requirements.txt
 └── pyproject.toml
 ```
@@ -150,11 +163,18 @@ webscraper/
 /setOptions  →  /scrapeData  →  ScrapeElement.scrape()  →  extract_text()  →  /result
   URL + count     form per        requests + BeautifulSoup     one string        table
                   element         find_all(tag, class/id)      per cell
+
+/result  →  /csv-download  →  /download_csv
+ button      status page        CsvWriter.to_bytes() → send_file(BytesIO,
+             (success / error)  as_attachment=True, download_name="scraped_data.csv")
 ```
+
+A single HTTP response can be either a page or a file, so the download is split in two:
+`/csv-download` renders the status page, which then requests the file from `/download_csv`.
 
 ## Roadmap
 
-- [ ] Export results to CSV (`CsvWriter` is ready, needs a route and a button)
+- [x] Export results to CSV
 - [ ] Custom CSS selector for nested elements (e.g. `a.tag`)
 - [ ] Check `robots.txt` before scraping
 - [ ] Documentation site with MkDocs

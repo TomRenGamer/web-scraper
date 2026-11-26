@@ -1,3 +1,13 @@
+"""
+Made by TomRen
+Safe scraping website: https://quotes.toscrape.com/
+
+Scraping data forms.
+
+Defines WTForms used to describe which HTML elements
+should be scraped from the target website.
+"""
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, FieldList, FormField, BooleanField
 from wtforms.validators import DataRequired

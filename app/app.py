@@ -11,8 +11,9 @@ The application allows the user to:
 """
 
 from werkzeug import Response
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, send_file
 from flask_wtf.csrf import CSRFProtect
+from flask_session import Session
 
 from components.scrapeElement import ScrapeElement
 from components.csvWriter import CsvWriter
@@ -31,6 +32,11 @@ flask = Flask(__name__,
               )
 
 flask.config["SECRET_KEY"] = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
+flask.config["SESSION_TYPE"] = "filesystem"
+flask.config["SESSION_FILE_DIR"] = os.path.join(flask.root_path, "flask_session")
+flask.config["SESSION_PERMANENT"] = False
+Session(flask)
+
 csrf = CSRFProtect(flask)
 
 
@@ -44,6 +50,11 @@ class App:
     """
 
     def __init__(self) -> None:
+        """
+        Initialize shared application services.
+
+        Creates the scraper, the CSV writer and sets up the logger.
+        """
         self.scraper = ScrapeElement()
         self.csv_writer = CsvWriter()
         self.logger = logging
@@ -183,6 +194,8 @@ def result() -> str:
     """
     data = session.get("scrape_results", {})
 
+    app.logger.info("Successful scraping results")
+
     return render_template(
         "result.html",
         numberOfElements=data.get("numberOfElements", 0),
@@ -192,6 +205,53 @@ def result() -> str:
         headersAmount=len(data.get("headers", []))
     )
 
+@flask.route('/csv-download', methods=["GET"])
+def csv_download():
+    """
+    Render the CSV download status page.
+
+    Checks whether the session contains scraping results and whether
+    a CSV file can be generated from them. On success the page
+    triggers the actual download from the 'download_csv' endpoint.
+
+    Returns:
+        str: Rendered HTML template with the download status.
+    """
+    data = session.get("scrape_results", {})
+    success = bool(data.get("results"))
+    if success:
+        try:
+            app.csv_writer.to_bytes(data["headers"], data["results"])
+            app.logger.info("Successful csv download")
+        except Exception as e:
+            app.logger.exception(f"Csv generation failed: {e}")
+            success = False
+
+    return render_template("download_csv.html", success=success)
+
+@flask.route('/download_csv', methods=["GET"])
+def download_csv():
+    """
+    Generate a CSV file from scraping results and send it to the user.
+
+    The file is built in memory, so nothing is saved on the disk.
+    If the session contains no results, the user is redirected
+    back to the download status page.
+
+    Returns:
+        Response: CSV file sent as an attachment or redirect response.
+    """
+    filename = "scraped_data"
+    data = session.get("scrape_results") or {}
+
+    if not data.get("results"):
+        app.logger.info("No csv downloaded")
+        return redirect(url_for("csv_download"))
+
+    buf = app.csv_writer.to_bytes(data["headers"], data["results"])
+    app.logger.info("Successful csv download")
+
+    return send_file(buf, mimetype="text/csv", as_attachment=True, download_name=f"{filename}.csv")
 
 if __name__ == "__main__":
     app.logger.info("Started app")

@@ -1,0 +1,40 @@
+{% extends 'home.html' %}
+
+{% block head %}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+{% if success %}
+<meta http-equiv="refresh" content="0; url={{ url_for('download_csv') }}" />
+{% endif %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+<title>Web Scraper - Download CSV</title>
+{% endblock %}
+
+{% block body %}
+<div class="status-card {{ 'is-success' if success else 'is-error' }}">
+  <span class="status-icon" aria-hidden="true">{{ '✓' if success else '!' }}</span>
+
+  {% if success %}
+  <h3>Successful download!</h3>
+  <p class="status-hint">
+    Your file <b>scraped_data.csv</b> should start downloading in a moment.
+    Didn't start? <a href="{{ url_for('download_csv') }}">Download it again</a>.
+  </p>
+
+  <p class="status-thanks">
+    Thanks for using <b>Web Scraper</b>! I hope it saved you some time.
+    If you found it useful, consider leaving a ⭐ on
+    <a href="https://github.com/TomRenGamer/webscraper-system" target="_blank" rel="noopener">GitHub</a>.
+    It really helps the project grow and keeps me motivated to add new features.
+  </p>
+  {% else %}
+  <h3>Something went wrong</h3>
+  <p class="status-hint">There's no data to export. Try scraping again.</p>
+  {% endif %}
+
+  <div class="actions">
+    <a class="btn" href="{{ url_for('set_options') }}">Scrape again</a>
+    <a class="btn btn-ghost" href="{{ url_for('home') }}">Homepage</a>
+  </div>
+</div>
+{% endblock %}

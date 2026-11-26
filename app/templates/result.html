@@ -23,5 +23,11 @@
     </tr>
     {% endfor %}
   </table>
+
+  <div>
+    <form class="download" action="{{ url_for('csv_download') }}" method="get">
+      <button type="submit">Download CSV</button>
+    </form>
+  </div>
 </div>
 {% endblock %}
